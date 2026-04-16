@@ -201,6 +201,13 @@
             background-color: var(--ai-btn-hover);
         }
 
+        .btn-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
         .output-section {
             margin-top: 24px;
             display: none;
@@ -258,7 +265,16 @@
             <span id="statusDot" class="status-dot"></span>
             <span id="llmStatusText">Engine Offline</span>
         </div>
-        <button id="loadLLMBtn" class="ai-btn" onclick="initLLM()">Load Model to GPU (Background)</button>
+        <label for="modelSelect">WebLLM Model</label>
+        <select id="modelSelect">
+            <option value="Phi-3-mini-4k-instruct-q4f16_1-MLC">Phi-3 Mini 4K Instruct (Fast)</option>
+            <option value="Llama-3.2-1B-Instruct-q4f16_1-MLC">Llama 3.2 1B Instruct (Balanced)</option>
+            <option value="Qwen2.5-1.5B-Instruct-q4f16_1-MLC">Qwen2.5 1.5B Instruct (Creative)</option>
+        </select>
+        <div class="btn-row">
+            <button id="downloadLLMBtn" class="ai-btn" onclick="downloadSelectedModel()">Download Selected Model to Device</button>
+            <button id="loadLLMBtn" class="ai-btn" onclick="loadModelFromDevice()">Load Selected Model From Device</button>
+        </div>
     </div>
 
     <div class="section-card">
@@ -631,50 +647,93 @@
 
     // --- WebLLM Local AI Setup ---
     let engine;
-    const selectedModel = "Phi-3-mini-4k-instruct-q4f16_1-MLC";
+    let activeModel = "";
+    const DOWNLOADED_MODELS_KEY = "downloadedWebLLMModels";
 
-    window.initLLM = async function() {
-        const loadBtn = document.getElementById('loadLLMBtn');
+    function getSelectedModel() {
+        return document.getElementById('modelSelect').value;
+    }
+
+    function getDownloadedModels() {
+        const raw = localStorage.getItem(DOWNLOADED_MODELS_KEY);
+        try {
+            return raw ? JSON.parse(raw) : [];
+        } catch {
+            return [];
+        }
+    }
+
+    function markModelDownloaded(modelId) {
+        const downloaded = new Set(getDownloadedModels());
+        downloaded.add(modelId);
+        localStorage.setItem(DOWNLOADED_MODELS_KEY, JSON.stringify([...downloaded]));
+    }
+
+    function setEngineStatus(message, mode = "loading") {
         const statusText = document.getElementById('llmStatusText');
         const statusDot = document.getElementById('statusDot');
         const outputStatusText = document.getElementById('outputEngineStatusText');
         const outputStatusDot = document.getElementById('outputStatusDot');
-        
-        if (engine) return; 
 
+        const className = mode === "ready" ? "status-dot ready" : mode === "danger" ? "status-dot danger" : "status-dot loading";
+        statusDot.className = className;
+        outputStatusDot.className = className;
+        statusText.innerText = `Engine Status: ${message}`;
+        outputStatusText.innerText = `AI Fix: ${message}`;
+    }
+
+    async function initializeLLM({ expectLocal = false } = {}) {
+        const selectedModel = getSelectedModel();
+        const downloadBtn = document.getElementById('downloadLLMBtn');
+        const loadBtn = document.getElementById('loadLLMBtn');
+
+        if (engine && activeModel === selectedModel) {
+            setEngineStatus(`Engine Ready (${selectedModel})`, "ready");
+            return;
+        }
+
+        if (expectLocal && !getDownloadedModels().includes(selectedModel)) {
+            alert("This model is not marked as downloaded on this device yet. Use 'Download Selected Model to Device' first.");
+            return;
+        }
+
+        downloadBtn.disabled = true;
         loadBtn.disabled = true;
-        loadBtn.innerText = "Downloading & Compiling Shaders...";
-        
-        statusDot.className = "status-dot loading";
-        outputStatusDot.className = "status-dot loading";
-        statusText.innerText = "Engine Status: Initializing Engine...";
-        outputStatusText.innerText = "AI Fix: Initializing Engine...";
+        downloadBtn.innerText = "Preparing Model...";
+        loadBtn.innerText = expectLocal ? "Loading From Device Cache..." : "Loading Model...";
+        setEngineStatus("Initializing Engine...", "loading");
 
         try {
             const initProgressCallback = (report) => {
                 const progressText = `Loading: ${Math.round(report.progress * 100)}% - ${report.text}`;
-                statusText.innerText = `Engine Status: ${progressText}`;
-                outputStatusText.innerText = `AI Fix: ${progressText}`;
+                setEngineStatus(progressText, "loading");
             };
-            
+
             engine = await CreateMLCEngine(selectedModel, { initProgressCallback });
-            
-            statusDot.className = "status-dot ready";
-            outputStatusDot.className = "status-dot ready";
-            statusText.innerText = "Engine Status: Engine Ready (Running Locally)";
-            outputStatusText.innerText = "AI Fix: Engine Ready";
-            loadBtn.style.display = 'none'; 
-            
+            activeModel = selectedModel;
+            markModelDownloaded(selectedModel);
+
+            setEngineStatus(`Engine Ready (${selectedModel})`, "ready");
+            downloadBtn.innerText = "Download Selected Model to Device";
+            loadBtn.innerText = "Load Selected Model From Device";
             document.getElementById('aiFixBtn').disabled = false;
         } catch (error) {
-            statusDot.className = "status-dot danger"; 
-            outputStatusDot.className = "status-dot danger"; 
-            statusText.innerText = `Engine Status: Error: ${error.message}`;
-            outputStatusText.innerText = `AI Fix: Error`;
-            loadBtn.disabled = false;
-            loadBtn.innerText = "Retry Loading Model";
+            setEngineStatus(`Error: ${error.message}`, "danger");
+            downloadBtn.innerText = "Retry Download";
+            loadBtn.innerText = "Retry Loading From Device";
             console.error(error);
+        } finally {
+            downloadBtn.disabled = false;
+            loadBtn.disabled = false;
         }
+    }
+
+    window.downloadSelectedModel = async function() {
+        await initializeLLM({ expectLocal: false });
+    };
+
+    window.loadModelFromDevice = async function() {
+        await initializeLLM({ expectLocal: true });
     };
 
     window.fixPromptWithLLM = async function() {
