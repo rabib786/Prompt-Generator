@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinematic Prompt Architect</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --primary: #9b51e0;
+            --primary-hover: #803fc2;
+            --ai-btn: #2980b9;
+            --ai-btn-hover: #3498db;
+            --text-main: #e0e0e0;
+            --text-muted: #888888;
+            --border-color: #333333;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning-bg: rgba(243, 156, 18, 0.1);
+            --warning-border: #f39c12;
+            --warning-text: #f39c12;
+            --input-bg: #121212;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+
+        .section-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .engine-card {
+            border-color: var(--ai-btn);
+            background-color: rgba(41, 128, 185, 0.05);
+        }
+
+        .section-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .engine-card .section-title {
+            color: var(--ai-btn);
+        }
+
+        .tip-box {
+            background-color: var(--warning-bg);
+            border-left: 4px solid var(--warning-border);
+            padding: 10px 12px;
+            font-size: 0.85rem;
+            color: var(--warning-text);
+            margin-bottom: 12px;
+            border-radius: 0 4px 4px 0;
+            line-height: 1.4;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+            margin-top: 12px;
+        }
+
+        label:first-of-type {
+            margin-top: 0;
+        }
+
+        select, input[type="text"], textarea {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            margin-bottom: 4px;
+            transition: border-color 0.2s;
+            appearance: none;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23888888%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat, repeat;
+            background-position: right .7em top 50%, 0 0;
+            background-size: .65em auto, 100%;
+            border-color: var(--primary);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        optgroup {
+            background-color: var(--card-bg);
+            color: var(--primary);
+            font-style: normal;
+            font-weight: 600;
+        }
+        
+        option {
+            color: var(--text-main);
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            margin-top: 8px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+            margin-bottom: 16px;
+        }
+
+        .checkbox-container input {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-container label {
+            margin-bottom: 0;
+            margin-top: 0;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+            margin-top: 16px;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+        }
+
+        button:disabled {
+            background-color: var(--border-color);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .ai-btn {
+            background-color: var(--ai-btn);
+        }
+
+        .ai-btn:hover:not(:disabled) {
+            background-color: var(--ai-btn-hover);
+        }
+
+        .output-section {
+            margin-top: 24px;
+            display: none;
+        }
+
+        #finalPrompt {
+            min-height: 200px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            background-color: #000000;
+            border: 1px solid var(--primary);
+        }
+
+        .copy-btn {
+            background-color: #333333;
+            margin-top: 8px;
+        }
+
+        .copy-btn.copied {
+            background-color: var(--success);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            font-family: monospace;
+        }
+
+        .status-dot {
+            height: 10px;
+            width: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            background-color: var(--danger);
+        }
+
+        .status-dot.loading { background-color: var(--warning-text); }
+        .status-dot.ready { background-color: var(--success); }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Cinematic Prompt Architect</h1>
+    <p class="subtitle">Layered syntax with WebGPU LLM Guardrails</p>
+
+    <div class="section-card engine-card">
+        <h2 class="section-title">Local AI Engine</h2>
+        <div class="status-indicator">
+            <span id="statusDot" class="status-dot"></span>
+            <span id="llmStatusText">Engine Offline</span>
+        </div>
+        <button id="loadLLMBtn" class="ai-btn" onclick="initLLM()">Load Model to GPU (Background)</button>
+    </div>
+
+    <div class="section-card">
+        <h2 class="section-title">1. The Format & Ratio</h2>
+        <label>Set Aspect Ratio</label>
+        <select id="ratioSelect" onchange="applyRatio(this.value);">
+            <option value="">+ Define Aspect Ratio (e.g., 9:16)...</option>
+            <optgroup label="Vertical (Social Media)">
+                <option value="9:16">TikTok/Reels/Shorts (9:16)</option>
+                <option value="4:5">Instagram Post (4:5)</option>
+            </optgroup>
+            <optgroup label="Horizontal (Landscape)">
+                <option value="16:9">YouTube Standard/HD (16:9)</option>
+                <option value="21:9">Ultra-Wide Cinematic (21:9)</option>
+                <option value="2:3">Editorial Portrait (2:3)</option>
+            </optgroup>
+            <optgroup label="Square & Print">
+                <option value="1:1">Square Post (1:1)</option>
+                <option value="5:7">Editorial Print (5:7)</option>
+            </optgroup>
+        </select>
+        <input type="text" id="ratio" placeholder="Format will compile here..." readonly>
+    </div>
+
+    <div class="section-card">
+        <h2 class="section-title">2. The Idea & Subject</h2>
+        
+        <div class="tip-box">
+            <strong>Director's Note:</strong> Avoid combining highly revealing clothing with reclining or bent-over poses. The AI Auto-Fix will adapt risky choices into safe, creative high-fashion alternatives.
+        </div>
+
+        <label>Subject & Gender</label>
+        <select onchange="appendToInput('idea', this.value);">
+            <option value="">+ Add Subject...</option>
+            <option value="Male high-fashion model">Male high-fashion model</option>
+            <option value="Female editorial model">Female editorial model</option>
+            <option value="Androgynous avant-garde model">Androgynous avant-garde model</option>
+            <option value="Gritty cinematic protagonist">Gritty cinematic protagonist</option>
+            <option value="Cyberpunk street-wearer">Cyberpunk street-wearer</option>
+            <option value="Ethereal fantasy subject">Ethereal fantasy subject</option>
+        </select>
+
+        <label>Wardrobe & Attire</label>
+        <select onchange="appendToInput('idea', this.value);">
+            <option value="">+ Add Wardrobe...</option>
+            <optgroup label="High Fashion & Couture">
+                <option value="wearing an oversized tailored blazer and wide-leg trousers">Oversized Tailored Suit</option>
+                <option value="wearing a flowing silk haute couture evening gown">Flowing Silk Evening Gown</option>
+                <option value="wearing an avant-garde structural fashion piece">Avant-Garde Structural Piece</option>
+                <option value="wearing a highly textured monochromatic trench coat">Monochromatic Trench Coat</option>
+            </optgroup>
+            <optgroup label="Casual & Editorial">
+                <option value="wearing a deep v-neck spaghetti strap crop top and denim shorts">Crop Top & Denim Shorts</option>
+                <option value="wearing a chic ribbed turtleneck and pleated midi skirt">Ribbed Turtleneck & Pleated Skirt</option>
+                <option value="wearing a vintage distressed leather jacket and jeans">Vintage Leather Jacket & Jeans</option>
+                <option value="wearing layered grunge streetwear">Layered Grunge Streetwear</option>
+            </optgroup>
+            <optgroup label="Thematic & Niche">
+                <option value="wearing utilitarian tactical cyberpunk gear">Tactical Cyberpunk Gear</option>
+                <option value="wearing ethereal sheer drapery">Ethereal Sheer Drapery</option>
+                <option value="wearing intricately embroidered traditional garments">Embroidered Traditional Garments</option>
+                <option value="wearing an elegant Victorian gothic ensemble">Victorian Gothic Ensemble</option>
+            </optgroup>
+        </select>
+
+        <label>Position & Posture</label>
+        <select onchange="appendToInput('idea', this.value);">
+            <option value="">+ Add Position...</option>
+            <option value="standing tall in contrapposto posture">Standing tall (Contrapposto)</option>
+            <option value="sitting casually with legs crossed">Sitting casually, legs crossed</option>
+            <option value="reclining elegantly">Reclining elegantly</option>
+            <option value="leaning casually against the wall">Leaning against wall</option>
+            <option value="mid-stride confident walk">Mid-stride confident walk</option>
+        </select>
+
+        <label>Action & Pose</label>
+        <select onchange="appendToInput('idea', this.value);">
+            <option value="">+ Add Action...</option>
+            <option value="adjusting their jacket collar">Adjusting jacket collar</option>
+            <option value="looking over their shoulder">Looking over shoulder</option>
+            <option value="running fingers through hair">Running fingers through hair</option>
+            <option value="holding a sleek prop">Holding a sleek prop</option>
+            <option value="holding a crystal cocktail glass">Holding a crystal cocktail glass</option>
+        </select>
+
+        <label>Environment & Setting</label>
+        <select onchange="appendToInput('idea', this.value);">
+            <option value="">+ Add Setting...</option>
+            <optgroup label="Indoor / Controlled">
+                <option value="in a high-end photography studio with a seamless backdrop">High-end Studio (Seamless)</option>
+                <option value="in a minimalist luxury apartment interior">Minimalist Luxury Apartment</option>
+                <option value="inside an abandoned brutalist concrete building">Abandoned Brutalist Building</option>
+            </optgroup>
+            <optgroup label="Outdoor / Dynamic">
+                <option value="in a neon-lit, rain-slicked Tokyo alleyway">Neon Tokyo Alleyway</option>
+                <option value="surrounded by a lush outdoor botanical garden">Lush Botanical Garden</option>
+                <option value="on a sun-drenched modern Mediterranean balcony">Sun-drenched Balcony</option>
+            </optgroup>
+        </select>
+
+        <label>Compiled Idea Box (Edit Freely)</label>
+        <textarea id="idea" placeholder="Select options above to build your core idea, or type directly here..."></textarea>
+    </div>
+
+    <div class="section-card">
+        <h2 class="section-title">3. The Camera Optics</h2>
+        <div class="tip-box">
+            <strong>Optics Check:</strong> Choose your lens carefully. A telephoto lens (85mm+) needs a close-up subject, a wide lens (14mm-35mm) needs an expansive scene.
+        </div>
+        
+        <label>Shot Type & Scale</label>
+        <select id="shotTypeSelect" onchange="applyLensConfig('shotType', this.value);">
+            <option value="">+ Define Shot Scale...</option>
+            <optgroup label="Close-Up">
+                <option value="close-up portrait">Close-Up Portrait (Head & Shoulders)</option>
+                <option value="macro close-up">Macro Close-Up (Extreme Detail)</option>
+            </optgroup>
+            <optgroup label="Medium Shot">
+                <option value="medium shot">Medium Shot (Waist Up)</option>
+                <option value="medium-full shot">Medium-Full Shot (Knees Up)</option>
+            </optgroup>
+            <optgroup label="Full Shot">
+                <option value="full-length shot">Full-Length Shot (Head to Toe)</option>
+                <option value="wide full shot">Wide Full Shot (Subject in Scene)</option>
+            </optgroup>
+        </select>
+        
+        <label>Lens Configuration & Type</label>
+        <select id="lensTypeSelect" onchange="applyLensConfig('lensType', this.value);">
+            <option value="">+ Select Lens and Distortion...</option>
+            <optgroup label="Telephoto (Compression, shallow DOF)">
+                <option value="85mm lens, perspective compression">85mm Prime (Compression Portrait)</option>
+                <option value="135mm lens, telephoto compression">135mm Prime (Strong Telephoto)</option>
+                <option value="200mm lens, extreme telephoto compression">200mm Prime (Extreme Telephoto)</option>
+            </optgroup>
+            <optgroup label="Wide Angle (Perspective, deep DOF)">
+                <option value="14mm ultra-wide lens, dynamic perspective, barrel distortion">14mm Prime (Dynamic Perspective)</option>
+                <option value="24mm wide lens, natural depth">24mm Prime (Standard Wide)</option>
+                <option value="35mm lens, classic wide cinematic look">35mm Prime (Classic Wide Cinematic)</option>
+            </optgroup>
+            <optgroup label="Macro & Special">
+                <option value="105mm macro lens, razor-sharp focus">105mm Macro Prime (Razor-Sharp)</option>
+                <option value="drone top-down shot, orthographic view">Drone Top-Down Shot</option>
+            </optgroup>
+        </select>
+        
+        <label>Aperture & Isolation</label>
+        <select id="apertureSelect" onchange="applyLensConfig('aperture', this.value);">
+            <option value="">+ Define Aperture Effect...</option>
+            <optgroup label="Shallow Depth of Field (Isolation)">
+                <option value="f1.4 aperture, creamy bokeh, high subject isolation">f/1.4 Isolation (High Isolation)</option>
+                <option value="f1.8 aperture, soft background blur">f/1.8 Aperture (Classic Bokeh)</option>
+            </optgroup>
+            <optgroup label="Deep Depth of Field (Everything in Focus)">
+                <option value="f/16 aperture, deep focus across whole scene">f/16 Deep Focus (Everything Sharp)</option>
+                <option value="f/8 aperture, standard photo depth">f/8 Aperture (Natural Sharpness)</option>
+            </optgroup>
+        </select>
+        <input type="text" id="camera" placeholder="Lens compilation will appear here..." readonly>
+    </div>
+
+    <div class="section-card">
+        <h2 class="section-title">4. Details, Textures & Dynamics</h2>
+        
+        <label>Lighting & Shadows</label>
+        <select onchange="appendToInput('lighting', this.value);">
+            <option value="">+ Add Lighting Setup...</option>
+            <option value="Volumetric lighting">Volumetric Lighting (God Rays)</option>
+            <option value="Cinematic teal and orange">Cinematic Teal and Orange</option>
+            <option value="Rim lighting">Rim Lighting (Edge Highlight)</option>
+            <option value="Soft purple neon">Soft Purple Neon</option>
+            <option value="Cinematic chiaroscuro">Cinematic Chiaroscuro (High Contrast)</option>
+        </select>
+        <input type="text" id="lighting" placeholder="Or type manually...">
+        
+        <label>Micro-Details (Hyper-Realism)</label>
+        <select onchange="appendToInput('details', this.value);">
+            <option value="">+ Add Micro-Details...</option>
+            <option value="8k UHD">8k UHD Resolution</option>
+            <option value="micro-textures">Micro-Textures</option>
+            <option value="micro-pores">Micro-Pores</option>
+            <option value="vellus hair">Vellus Hair (Peach Fuzz)</option>
+            <option value="dust particles">Floating Dust Particles</option>
+            <option value="cinematic film grain">Cinematic Film Grain</option>
+        </select>
+        <input type="text" id="details" value="8k UHD, micro-textures, micro-pores" placeholder="Or type manually...">
+
+        <label>Material Textures</label>
+        <select onchange="appendToInput('texture', this.value);">
+            <option value="">+ Add Material Textures...</option>
+            <option value="Polished metal">Polished Metal</option>
+            <option value="Anodized aluminum">Anodized Aluminum</option>
+            <option value="Wet glass">Wet Glass</option>
+            <option value="Rough concrete">Rough Concrete</option>
+            <option value="Woven fabric">Woven Fabric</option>
+            <option value="Carbon fiber weave">Carbon Fiber Weave</option>
+        </select>
+        <input type="text" id="texture" placeholder="Or type manually...">
+
+        <label>Emotional Mood & Colors</label>
+        <select onchange="appendToInput('emotion', this.value);">
+            <option value="">+ Add Emotion & Color Theory...</option>
+            <option value="Cold technological calm">Cold Technological Calm</option>
+            <option value="Cool blue for isolation">Cool Blue (Isolation)</option>
+            <option value="Warm orange for comfort">Warm Orange (Comfort)</option>
+            <option value="Eerie, unsettling atmosphere">Eerie Atmosphere</option>
+            <option value="Melancholic nostalgia">Melancholic Nostalgia</option>
+        </select>
+        <input type="text" id="emotion" placeholder="Or type manually...">
+
+        <label>Physical Laws & Actions</label>
+        <select onchange="appendToInput('physics', this.value);">
+            <option value="">+ Add Physics & Movement...</option>
+            <optgroup label="Ambient (Works Anywhere)">
+                <option value="Dust particles floating in light rays">Dust particles in light rays</option>
+                <option value="Smoke billowing slowly">Smoke billowing slowly</option>
+                <option value="Kinetic motion blur">Kinetic motion blur</option>
+            </optgroup>
+            <optgroup label="Weather (Requires Outdoors/Open Window)">
+                <option value="Rain hitting metal">Rain hitting metal</option>
+                <option value="Wind moving fabric">Wind moving fabric</option>
+            </optgroup>
+            <optgroup label="Action-Based (Requires Prop/Source)">
+                <option value="Slow-motion liquid splash coming from the glass">Liquid splash (Requires holding a drink)</option>
+                <option value="Sparks flying in the background">Sparks flying (Requires metal tool/machinery)</option>
+            </optgroup>
+        </select>
+        <input type="text" id="physics" placeholder="Or type manually...">
+    </div>
+
+    <div class="section-card">
+        <h2 class="section-title">5. Style Anchors</h2>
+        <select onchange="appendToInput('style', this.value);">
+            <option value="">+ Add Art Style or Blend...</option>
+            <option value="70% Cyberpunk, 30% Photorealism">70% Cyberpunk, 30% Photorealism</option>
+            <option value="Pixar animation style">Pixar Colors & Animation</option>
+            <option value="Wes Anderson symmetry">Wes Anderson Symmetry & Palettes</option>
+            <option value="Neo-Noir film style">Neo-Noir Film Style</option>
+            <option value="High-fashion editorial photography">High-Fashion Editorial</option>
+            <option value="Dark fantasy concept art">Dark Fantasy Concept Art</option>
+        </select>
+        <input type="text" id="style" placeholder="Style or mathematical blend...">
+    </div>
+
+    <div class="section-card">
+        <h2 class="section-title">6. Constraints</h2>
+        <select onchange="appendToInput('negative', this.value);">
+            <option value="">+ Add Negative Constraints...</option>
+            <option value="without distortion">No Distortion</option>
+            <option value="without extra limbs">No Extra Limbs</option>
+            <option value="without plastic look">No Plastic/CGI Look</option>
+            <option value="without garish colors">No Garish Colors</option>
+            <option value="without cartoonish style">No Cartoonish Style</option>
+        </select>
+        <textarea id="negative" placeholder="without distortion, without extra limbs..."></textarea>
+        
+        <div class="checkbox-container">
+            <input type="checkbox" id="strictMode" checked>
+            <label for="strictMode">Append "Strict adherence to the configuration"</label>
+        </div>
+    </div>
+
+    <button id="generateBtn" onclick="generatePrompt()">Compile Manual Prompt</button>
+
+    <div class="output-section" id="outputSection">
+        <h2 class="section-title">Your Formatted Prompt</h2>
+        <textarea id="finalPrompt"></textarea>
+        
+        <button id="aiFixBtn" class="ai-btn" onclick="fixPromptWithLLM()" disabled>AI Sanity Check & Auto-Fix (WebGPU)</button>
+        <div id="llmStatusText" class="status-indicator" style="margin-top: 12px; justify-content: center;">
+            <span id="outputStatusDot" class="status-dot"></span>
+            <span id="outputEngineStatusText">AI Fix: Engine Offline</span>
+        </div>
+
+        <button id="copyBtn" class="copy-btn" onclick="copyPrompt()">Copy to Clipboard</button>
+    </div>
+</div>
+
+<script type="module">
+    import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
+
+    // Expose functions to window
+    window.appendToInput = function(inputId, value) {
+        if (!value) return;
+        const inputField = document.getElementById(inputId);
+        const currentValue = inputField.value.trim();
+        if (currentValue === "") {
+            inputField.value = value;
+        } else if (!currentValue.includes(value)) {
+            inputField.value = currentValue + ", " + value;
+        }
+    };
+
+    // Advanced Lens Config state
+    const lensState = {
+        shotType: '',
+        lensType: '',
+        aperture: '',
+    };
+
+    window.applyLensConfig = function(type, value) {
+        lensState[type] = value;
+        const compiledCameraString = [lensState.shotType, lensState.lensType, lensState.aperture].filter(Boolean).join(', ');
+        document.getElementById('camera').value = compiledCameraString;
+    };
+
+    // Advanced Ratio state
+    window.applyRatio = function(ratioValue) {
+        document.getElementById('ratio').value = ratioValue ? `set aspect ratio to ${ratioValue}` : '';
+    };
+
+    window.generatePrompt = function() {
+        const ratio = document.getElementById('ratio').value.trim();
+        const idea = document.getElementById('idea').value.trim();
+        const camera = document.getElementById('camera').value.trim();
+        const lighting = document.getElementById('lighting').value.trim();
+        const details = document.getElementById('details').value.trim();
+        const texture = document.getElementById('texture').value.trim();
+        const emotion = document.getElementById('emotion').value.trim();
+        const physics = document.getElementById('physics').value.trim();
+        const style = document.getElementById('style').value.trim();
+        const negative = document.getElementById('negative').value.trim();
+        const strictMode = document.getElementById('strictMode').checked;
+
+        let compiledPrompt = "";
+        
+        if (ratio) compiledPrompt += `• The Format: ${ratio}\n`;
+        if (idea) compiledPrompt += `• The Idea: ${idea}\n`;
+        
+        let detailsLayer = [];
+        if (details) detailsLayer.push(details);
+        if (texture) detailsLayer.push(`Texture: ${texture}`);
+        if (physics) detailsLayer.push(`Physics: ${physics}`);
+        if (detailsLayer.length > 0) compiledPrompt += `• The Details: ${detailsLayer.join(', ')}\n`;
+
+        if (camera) compiledPrompt += `• The Camera: ${camera}\n`;
+        
+        let colorLayer = [];
+        if (lighting) colorLayer.push(lighting);
+        if (emotion) colorLayer.push(`Mood: ${emotion}`);
+        if (colorLayer.length > 0) compiledPrompt += `• The Colors & Lighting: ${colorLayer.join(', ')}\n`;
+
+        if (style) compiledPrompt += `• The Style: ${style}\n`;
+        if (negative) compiledPrompt += `• The Negative: ${negative}\n`;
+        if (strictMode) compiledPrompt += `\nExactly matching the description. Strict adherence to the configuration.`;
+
+        if (compiledPrompt.trim() !== "") {
+            document.getElementById('finalPrompt').value = compiledPrompt.trim();
+            document.getElementById('outputSection').style.display = 'block';
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        } else {
+            alert("Please fill in at least 'The Idea' to generate a prompt.");
+        }
+    };
+
+    window.copyPrompt = function() {
+        const promptText = document.getElementById('finalPrompt');
+        promptText.select();
+        promptText.setSelectionRange(0, 99999); 
+        navigator.clipboard.writeText(promptText.value);
+        
+        const btn = document.getElementById('copyBtn');
+        btn.innerText = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.innerText = 'Copy to Clipboard';
+            btn.classList.remove('copied');
+        }, 2000);
+    };
+
+    // --- WebLLM Local AI Setup ---
+    let engine;
+    const selectedModel = "Phi-3-mini-4k-instruct-q4f16_1-MLC";
+
+    window.initLLM = async function() {
+        const loadBtn = document.getElementById('loadLLMBtn');
+        const statusText = document.getElementById('llmStatusText');
+        const statusDot = document.getElementById('statusDot');
+        const outputStatusText = document.getElementById('outputEngineStatusText');
+        const outputStatusDot = document.getElementById('outputStatusDot');
+        
+        if (engine) return; 
+
+        loadBtn.disabled = true;
+        loadBtn.innerText = "Downloading & Compiling Shaders...";
+        
+        statusDot.className = "status-dot loading";
+        outputStatusDot.className = "status-dot loading";
+        statusText.innerText = "Engine Status: Initializing Engine...";
+        outputStatusText.innerText = "AI Fix: Initializing Engine...";
+
+        try {
+            const initProgressCallback = (report) => {
+                const progressText = `Loading: ${Math.round(report.progress * 100)}% - ${report.text}`;
+                statusText.innerText = `Engine Status: ${progressText}`;
+                outputStatusText.innerText = `AI Fix: ${progressText}`;
+            };
+            
+            engine = await CreateMLCEngine(selectedModel, { initProgressCallback });
+            
+            statusDot.className = "status-dot ready";
+            outputStatusDot.className = "status-dot ready";
+            statusText.innerText = "Engine Status: Engine Ready (Running Locally)";
+            outputStatusText.innerText = "AI Fix: Engine Ready";
+            loadBtn.style.display = 'none'; 
+            
+            document.getElementById('aiFixBtn').disabled = false;
+        } catch (error) {
+            statusDot.className = "status-dot danger"; 
+            outputStatusDot.className = "status-dot danger"; 
+            statusText.innerText = `Engine Status: Error: ${error.message}`;
+            outputStatusText.innerText = `AI Fix: Error`;
+            loadBtn.disabled = false;
+            loadBtn.innerText = "Retry Loading Model";
+            console.error(error);
+        }
+    };
+
+    window.fixPromptWithLLM = async function() {
+        const rawPrompt = document.getElementById('finalPrompt').value;
+        const fixBtn = document.getElementById('aiFixBtn');
+
+        if (!rawPrompt || !engine) return;
+
+        fixBtn.disabled = true;
+        fixBtn.innerText = "Analyzing Contextual Optics...";
+
+        try {
+            const systemPrompt = `You are an expert AI prompt engineer optimizing inputs for high-end image models. 
+            Review the provided prompt. 
+            1. Fix contextual mismatches (e.g., remove liquid splashes if no glass is present, remove weather like rain if setting is indoors).
+            2. Check for Lens <-> Setting mismatch (e.g., if the lens is telephoto (85mm+) and the setting is an expansive minimalist apartment interior, modify the Idea layer to change the setting to a close-up against a blurred wall, or change the lens to a wide 35mm lens).
+            3. Adjust NSFW triggers creatively (modest, creative high-fashion alternatives).
+            4. Maintain exact bulleted structure (• The Format:, • The Idea:, • The Camera:, etc.).
+            Output ONLY corrected prompt text. No conversational filler or markdown blocks.`;
+
+            const messages = [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: rawPrompt }
+            ];
+
+            const reply = await engine.chat.completions.create({ messages });
+            
+            document.getElementById('finalPrompt').value = reply.choices[0].message.content.trim();
+        } catch (error) {
+            console.error(error);
+            alert("LLM Processing Error: " + error.message);
+        } finally {
+            fixBtn.disabled = false;
+            fixBtn.innerText = "AI Sanity Check & Auto-Fix (WebGPU)";
+        }
+    };
+</script>
+
+</body>
+</html>
