@@ -737,19 +737,45 @@
         }
     };
 
-    window.copyPrompt = function() {
+    window.copyPrompt = async function() {
         const promptText = document.getElementById('finalPrompt');
-        promptText.select();
-        promptText.setSelectionRange(0, 99999); 
-        navigator.clipboard.writeText(promptText.value);
-        
         const btn = document.getElementById('copyBtn');
-        btn.innerText = 'Copied!';
-        btn.classList.add('copied');
-        setTimeout(() => {
-            btn.innerText = 'Copy to Clipboard';
-            btn.classList.remove('copied');
-        }, 2000);
+        const originalLabel = 'Copy to Clipboard';
+
+        if (!promptText.value.trim()) {
+            btn.innerText = 'Nothing to Copy';
+            setTimeout(() => {
+                btn.innerText = originalLabel;
+            }, 1800);
+            return;
+        }
+
+        const markCopyState = (label, isSuccess = false) => {
+            btn.innerText = label;
+            btn.classList.toggle('copied', isSuccess);
+            setTimeout(() => {
+                btn.innerText = originalLabel;
+                btn.classList.remove('copied');
+            }, 2000);
+        };
+
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(promptText.value);
+            } else {
+                promptText.focus();
+                promptText.select();
+                promptText.setSelectionRange(0, promptText.value.length);
+                const copied = document.execCommand('copy');
+                if (!copied) throw new Error('execCommand copy failed');
+            }
+
+            markCopyState('Copied!', true);
+        } catch (error) {
+            console.error('Clipboard copy failed:', error);
+            markCopyState('Copy Failed');
+            alert('Copy failed in this browser context. Select the prompt and copy manually.');
+        }
     };
 
     // --- WebLLM Local AI Setup ---
