@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cinematic Prompt Architect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="bg-layer" aria-hidden="true"></div>
+  <main class="container" id="appRoot">
+    <header class="hero card" data-card>
+      <div>
+        <h1>Cinematic Prompt Architect</h1>
+        <p>Build cinematic prompts with real-time contradiction detection, camera visualization, and local WebLLM refinement.</p>
+      </div>
+      <button id="themeToggle" class="ghost-btn" type="button" aria-label="Toggle dark and light theme">🌗 Theme</button>
+    </header>
+
+    <section class="card engine-card" data-card>
+      <h2>Local AI Engine</h2>
+      <div class="engine-status" id="engineStatusWrap">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="llmStatusText">Engine offline</span>
+      </div>
+      <label for="modelSelect">WebLLM Model</label>
+      <select id="modelSelect">
+        <option value="Phi-3-mini-4k-instruct-q4f16_1-MLC">Phi-3 Mini 4K Instruct (Fast)</option>
+        <option value="Llama-3.2-1B-Instruct-q4f16_1-MLC">Llama 3.2 1B Instruct (Balanced)</option>
+        <option value="Qwen2.5-1.5B-Instruct-q4f16_1-MLC">Qwen2.5 1.5B Instruct (Creative)</option>
+      </select>
+      <div class="button-row">
+        <button id="downloadLLMBtn" class="secondary">Download Model</button>
+        <button id="loadLLMBtn" class="secondary">Load Cached Model</button>
+      </div>
+    </section>
+
+    <section class="card" data-card>
+      <h2>1) Format</h2>
+      <label for="ratioSelect">Aspect Ratio</label>
+      <select id="ratioSelect" data-target="ratio">
+        <option value="">Select ratio...</option>
+        <option value="9:16">9:16 Vertical</option>
+        <option value="4:5">4:5 Portrait</option>
+        <option value="1:1">1:1 Square</option>
+        <option value="16:9">16:9 Landscape</option>
+        <option value="21:9">21:9 Cinematic</option>
+      </select>
+      <input id="ratio" type="text" readonly placeholder="set aspect ratio to ..." />
+    </section>
+
+    <section class="card" data-card>
+      <h2>2) Idea & Subject</h2>
+      <div class="tip">Safety note: revealing wardrobe + reclining poses are auto-transformed into safer editorial alternatives.</div>
+      <label>Subject</label>
+      <select data-append="idea">
+        <option value="">+ Add subject</option>
+        <option value="Female editorial model">Female editorial model</option>
+        <option value="Male high-fashion model">Male high-fashion model</option>
+        <option value="Androgynous avant-garde model">Androgynous avant-garde model</option>
+      </select>
+      <label>Wardrobe</label>
+      <select data-append="idea">
+        <option value="">+ Add wardrobe</option>
+        <option value="wearing a deep v-neck crop top">Deep v-neck crop top</option>
+        <option value="wearing a metallic bikini">Metallic bikini</option>
+        <option value="wearing an oversized tailored blazer and wide-leg trousers">Oversized tailored blazer and wide-leg trousers</option>
+        <option value="wearing a high-fashion editorial bodysuit">High-fashion editorial bodysuit</option>
+      </select>
+      <label>Pose</label>
+      <select data-append="idea">
+        <option value="">+ Add pose</option>
+        <option value="reclining elegantly">Reclining elegantly</option>
+        <option value="arching back">Arching back</option>
+        <option value="standing in contrapposto">Standing in contrapposto</option>
+      </select>
+      <label>Action</label>
+      <select data-append="idea">
+        <option value="">+ Add action</option>
+        <option value="holding a crystal glass">Holding a crystal glass</option>
+        <option value="lifting sunglasses halfway down the nose">Lifting sunglasses</option>
+      </select>
+      <label>Setting</label>
+      <select data-append="idea" id="environmentSelect">
+        <option value="">+ Add setting</option>
+        <option value="in a minimalist luxury apartment interior">Minimalist luxury apartment interior</option>
+        <option value="inside a high-end photography studio">High-end photo studio</option>
+        <option value="on a rain-glossed downtown street at night">Rain-glossed downtown street at night</option>
+        <option value="on a private tropical beach at golden hour">Private tropical beach at golden hour</option>
+      </select>
+      <input id="idea" type="text" placeholder="Describe subject, wardrobe, pose, setting..." />
+    </section>
+
+    <section class="card" data-card>
+      <h2>3) Camera Optics</h2>
+      <label>Shot type</label>
+      <select id="shotTypeSelect" data-lens="shotType">
+        <option value="">+ Select shot type</option>
+        <option value="close-up portrait framing">Close-up</option>
+        <option value="medium shot framing">Medium</option>
+        <option value="full body framing">Full body</option>
+        <option value="extreme wide establishing shot">Extreme wide establishing</option>
+      </select>
+      <label>Lens</label>
+      <select id="lensTypeSelect" data-lens="lensType">
+        <option value="">+ Select lens</option>
+        <option value="24mm wide lens">24mm wide</option>
+        <option value="35mm lens">35mm</option>
+        <option value="85mm telephoto lens">85mm telephoto</option>
+        <option value="105mm macro lens">105mm macro</option>
+      </select>
+      <label>Aperture</label>
+      <select id="apertureSelect" data-lens="aperture">
+        <option value="">+ Select aperture</option>
+        <option value="f/1.4 aperture with creamy bokeh">f/1.4 (shallow DOF)</option>
+        <option value="f/2.8 aperture with balanced depth">f/2.8</option>
+        <option value="f/8 aperture with broad sharpness">f/8</option>
+        <option value="f/16 aperture with deep focus">f/16</option>
+      </select>
+      <input id="camera" type="text" readonly placeholder="Compiled camera config..." />
+      <div class="camera-preview-wrap">
+        <canvas id="cameraPreview" width="180" height="140" aria-label="Camera visual preview"></canvas>
+        <p id="previewMeta">Live framing preview</p>
+      </div>
+    </section>
+
+    <section class="card" data-card>
+      <h2>4) Details</h2>
+      <label>Lighting</label>
+      <input id="lighting" type="text" value="cinematic chiaroscuro" />
+      <label>Micro details</label>
+      <input id="details" type="text" value="8k UHD, micro-textures, micro-pores" />
+      <label>Texture</label>
+      <input id="texture" type="text" placeholder="wet glass, woven fabric..." />
+      <label>Mood</label>
+      <input id="emotion" type="text" placeholder="moody neon melancholy..." />
+      <label>Physics</label>
+      <select data-append="physics">
+        <option value="">+ Add physics action</option>
+        <option value="Rain hitting metal">Rain hitting metal</option>
+        <option value="Wind moving fabric">Wind moving fabric</option>
+        <option value="Slow-motion liquid splash">Slow-motion liquid splash</option>
+        <option value="Dust particles floating in light rays">Dust particles floating in light rays</option>
+      </select>
+      <input id="physics" type="text" placeholder="physics and movement..." />
+    </section>
+
+    <section class="card" data-card>
+      <h2>5) Style</h2>
+      <input id="style" type="text" placeholder="Neo-noir editorial realism..." />
+    </section>
+
+    <section class="card" data-card>
+      <h2>6) Constraints</h2>
+      <textarea id="negative" rows="4" placeholder="without distortion, without extra limbs..."></textarea>
+      <div class="inline">
+        <label class="checkbox"><input id="strictMode" type="checkbox" checked /> Strict adherence to the configuration.</label>
+      </div>
+      <div class="inline controls">
+        <label>Copy mode:</label>
+        <label><input type="radio" name="copyMode" value="plain" checked /> Plain text</label>
+        <label><input type="radio" name="copyMode" value="markdown" /> Markdown</label>
+      </div>
+      <div class="button-row">
+        <button id="exportJsonBtn" class="secondary">Export JSON</button>
+      </div>
+    </section>
+
+    <section class="card output" id="outputSection" data-card>
+      <h2>Compiled Prompt</h2>
+      <textarea id="finalPrompt" rows="12"></textarea>
+      <div class="button-row">
+        <button id="aiFixBtn" class="secondary" disabled>AI Sanity Check</button>
+        <button id="smartSuggestBtn" class="secondary" disabled>Smart Suggest</button>
+      </div>
+      <button id="copyBtn">Copy Prompt</button>
+    </section>
+  </main>
+
+  <aside class="action-bar" id="stickyActions">
+    <button id="compileBtn">Compile Prompt ⌘/Ctrl+Enter</button>
+  </aside>
+
+  <div id="toastStack" class="toast-stack" aria-live="polite"></div>
+
+  <script type="module" src="./uiController.js"></script>
+</body>
+</html>
