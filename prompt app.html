@@ -8,6 +8,7 @@
         :root {
             --bg-color: #121212;
             --card-bg: #1e1e1e;
+            --card-elevated: #242424;
             --primary: #9b51e0;
             --primary-hover: #803fc2;
             --ai-btn: #2980b9;
@@ -21,48 +22,60 @@
             --warning-border: #f39c12;
             --warning-text: #f39c12;
             --input-bg: #121212;
+            --focus-ring: rgba(155, 81, 224, 0.3);
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.45;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
-            padding: 16px;
+            padding: clamp(12px, 2vw, 24px);
             box-sizing: border-box;
         }
 
         .container {
-            max-width: 600px;
+            max-width: 840px;
             margin: 0 auto;
             padding-bottom: 40px;
         }
 
+        .app-header {
+            margin-bottom: 16px;
+            padding: 18px 16px;
+            border-radius: 14px;
+            background: linear-gradient(180deg, rgba(155, 81, 224, 0.16), rgba(155, 81, 224, 0.05));
+            border: 1px solid rgba(155, 81, 224, 0.28);
+        }
+
         h1 {
-            font-size: 1.5rem;
+            font-size: clamp(1.3rem, 4vw, 1.9rem);
             text-align: center;
             margin-bottom: 8px;
             color: #ffffff;
+            line-height: 1.2;
         }
 
         p.subtitle {
             text-align: center;
             color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 24px;
+            font-size: 0.95rem;
+            margin-bottom: 0;
         }
 
         .section-card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
+            border-radius: 14px;
+            padding: clamp(14px, 2.2vw, 20px);
+            margin-bottom: 14px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
         }
 
         .engine-card {
             border-color: var(--ai-btn);
-            background-color: rgba(41, 128, 185, 0.05);
+            background-color: rgba(41, 128, 185, 0.09);
         }
 
         .section-title {
@@ -90,8 +103,8 @@
 
         label {
             display: block;
-            font-size: 0.85rem;
-            font-weight: 500;
+            font-size: 0.9rem;
+            font-weight: 600;
             margin-bottom: 6px;
             color: var(--text-muted);
             margin-top: 12px;
@@ -106,12 +119,12 @@
             background-color: var(--input-bg);
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 12px;
-            font-size: 1rem;
+            font-size: 16px;
             box-sizing: border-box;
             margin-bottom: 4px;
-            transition: border-color 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
             appearance: none;
         }
 
@@ -139,6 +152,8 @@
         input[type="text"]:focus, textarea:focus, select:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--focus-ring);
+            background-color: #181818;
         }
 
         textarea {
@@ -173,17 +188,21 @@
             background-color: var(--primary);
             color: white;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             padding: 14px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s, opacity 0.2s;
-            margin-top: 16px;
+            transition: background-color 0.2s, opacity 0.2s, transform 0.08s ease-in-out;
+            margin-top: 14px;
         }
 
         button:hover:not(:disabled) {
             background-color: var(--primary-hover);
+        }
+        
+        button:active:not(:disabled) {
+            transform: translateY(1px);
         }
 
         button:disabled {
@@ -206,6 +225,14 @@
             grid-template-columns: 1fr;
             gap: 10px;
             margin-top: 12px;
+        }
+
+        .primary-action {
+            position: sticky;
+            bottom: 10px;
+            z-index: 10;
+            background: linear-gradient(to top, rgba(18, 18, 18, 0.95), rgba(18, 18, 18, 0.65), transparent);
+            padding-top: 8px;
         }
 
         .output-section {
@@ -251,13 +278,42 @@
         .status-dot.loading { background-color: var(--warning-text); }
         .status-dot.ready { background-color: var(--success); }
 
+        @media (min-width: 640px) {
+            .btn-row {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .primary-action button {
+                max-width: 340px;
+                margin-left: auto;
+                margin-right: auto;
+                display: block;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .section-card {
+                margin-bottom: 12px;
+                border-radius: 12px;
+            }
+
+            .tip-box {
+                font-size: 0.82rem;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Cinematic Prompt Architect</h1>
-    <p class="subtitle">Layered syntax with WebGPU LLM Guardrails</p>
+    <div class="app-header">
+        <h1>Cinematic Prompt Architect</h1>
+        <p class="subtitle">Build prompts step by step with local AI guardrails and mobile-friendly controls.</p>
+    </div>
 
     <div class="section-card engine-card">
         <h2 class="section-title">Local AI Engine</h2>
@@ -537,14 +593,16 @@
         </div>
     </div>
 
-    <button id="generateBtn" onclick="generatePrompt()">Compile Manual Prompt</button>
+    <div class="primary-action">
+        <button id="generateBtn" onclick="generatePrompt()">Compile Manual Prompt</button>
+    </div>
 
     <div class="output-section" id="outputSection">
         <h2 class="section-title">Your Formatted Prompt</h2>
         <textarea id="finalPrompt"></textarea>
         
         <button id="aiFixBtn" class="ai-btn" onclick="fixPromptWithLLM()" disabled>AI Sanity Check & Auto-Fix (WebGPU)</button>
-        <div id="llmStatusText" class="status-indicator" style="margin-top: 12px; justify-content: center;">
+        <div id="outputLlmStatus" class="status-indicator" style="margin-top: 12px; justify-content: center;">
             <span id="outputStatusDot" class="status-dot"></span>
             <span id="outputEngineStatusText">AI Fix: Engine Offline</span>
         </div>
